@@ -92,11 +92,33 @@ React/Next.js + Tailwind • Node.js or Python/FastAPI REST • PostgreSQL • S
 
 Do not build Phase 2 features in Phase 1, and so on. If a "small Phase 2 feature" is tempting during Phase 1, push back.
 
+## Branches — solo dos, nunca crear más sin permiso
+
+Este repo usa **exactamente dos ramas**. YOU MUST NOT crear otras sin que el usuario lo pida explícitamente.
+
+- **`main`** = **PRODUCCIÓN.** Lo que los usuarios ven online.
+- **`staging`** = **DESARROLLO.** Donde probamos cambios antes de publicar.
+
+### Vocabulario — traducir siempre a la rama correcta
+
+Cuando el usuario diga cualquiera de estos términos, asumir la rama indicada sin preguntar:
+
+| El usuario dice… | Rama |
+|---|---|
+| "producción", "prod", "main", "online", "la web", "publicar", "subir a producción", "lo que los usuarios van a ver" | **`main`** |
+| "desarrollo", "development", "dev", "staging", "ambiente de prueba", "entorno de pruebas" | **`staging`** |
+
+### Reglas por defecto
+
+- **Todos los commits van en `staging`.** YOU MUST hacer `git checkout staging` antes de commitear si no estás ya en ella.
+- **`main` solo recibe merges desde `staging`** — y solo cuando el usuario pide explícitamente publicar (usá los sinónimos de "producción" de arriba para reconocer la intención).
+- **NO crear ramas nuevas por iniciativa propia.** Solo si el usuario pide explícitamente "crea una rama para X funcionalidad". En ese caso, ramificar desde `staging`, nunca desde `main`.
+- Esta convención **reemplaza** cualquier patrón previo tipo `phase{N}/...` o feature branches por módulo.
+
 ## Workflow & repo etiquette
 
-- **Branches:** `phase{N}/<kebab-case-description>` (e.g. `phase1/waterfall-engine`, `phase2/whatsapp-bot-proactive`).
 - **Commits:** present-tense, scope-prefixed when useful (`waterfall:`, `bot:`, `dashboard:`, `semaforo:`). Reference the PRD section when implementing a spec'd feature: `waterfall: implement catch-up tier (PRD §5.3.2)`.
-- **PRs:** small and module-scoped. Do **not** bundle bot work with dashboard work.
+- **Merges a `main`:** small and module-scoped — do **not** bundle bot work with dashboard work en un solo publish.
 - **Schema/migration changes** require a paired migration script — never edit the DB by hand, and never edit a migration that has been merged.
 - **Plan mode** for any change touching >2 files or financial logic. Skip planning for typo-class fixes.
 
