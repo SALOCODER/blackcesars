@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repo status
 
-**Pre-implementation.** Only artifact is the PRD at [DOCS/masterplan.md/PRD_Black_Cesars_1.md](DOCS/masterplan.md/PRD_Black_Cesars_1.md). Gotcha: `masterplan.md` is a **folder**, not a file. Read the PRD before scaffolding — it is the source of truth, not this file.
+**Scaffold inicial listo.** Stack vivo: Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4 + Supabase JS (con las API keys nuevas `sb_publishable_*` / `sb_secret_*`). El PRD vive en [DOCS/masterplan.md/PRD_Black_Cesars_1.md](DOCS/masterplan.md/PRD_Black_Cesars_1.md) (gotcha: `masterplan.md` es una **carpeta**, no un archivo) y sigue siendo la fuente de verdad del producto — este archivo no.
 
 ## One-line product
 
@@ -12,15 +12,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build / test / lint commands
 
-**None yet — project is pre-scaffolding.** When the first PR scaffolds the stack, replace this section with:
-- Package manager + install command
-- Dev server (frontend + backend) start commands
-- Single-test invocation (e.g. `npm test -- path/to/file.test.ts`) — IMPORTANT: prefer single-test runs over the full suite for iteration speed
-- Lint + typecheck (run both after a series of edits before declaring done)
-- DB migration up/down
-- WhatsApp bot worker entry point (Phase 2+)
+Package manager: **npm**. Install: `npm install`.
 
-Until then, there is nothing to build, run, or test.
+| Comando | Hace |
+|---|---|
+| `npm run dev` | Dev server (Turbopack) en http://localhost:3000 |
+| `npm run build` | Production build (next build) |
+| `npm run start` | Sirve el build de producción — requiere `npm run build` antes |
+| `npm run lint` | ESLint con `eslint-config-next` (flat config en `eslint.config.mjs`) |
+| `npm run typecheck` | `tsc --noEmit` — valida tipos sin emitir |
+
+IMPORTANT: después de una serie de edits, correr `npm run typecheck` antes de declarar done. Para tests, cuando exista test runner, **preferir single-test invocations** sobre toda la suite para velocidad de iteración.
+
+**Env vars locales:** crear `.env.local` en la raíz con `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`. Ese archivo está en `.gitignore` — nunca commitearlo.
+
+**Pendiente de scaffoldar** (cuando exista, documentar acá):
+- Test runner + comando single-test
+- Supabase CLI + migrations up/down
+- WhatsApp bot worker entry point (Fase 2+)
 
 ## Hard rules — YOU MUST follow
 
@@ -79,9 +88,19 @@ Authoritative matrix: PRD §4.3. Key invariants:
 6. **Semáforo + Alerts engine** — configurable threshold rules
 7. **Reportes** — weekly auto (replaces Xenia's current report), monthly executive, investor-facing (V2)
 
-### Suggested stack (PRD §6.1 — non-binding, but justify deviations)
+### Stack actual (ya scaffoldeado)
 
-React/Next.js + Tailwind • Node.js or Python/FastAPI REST • PostgreSQL • S3 (or equivalent) for media • `whatsapp-web.js` or Baileys for Phase 1, migrate to WhatsApp Business API in Phase 3 • Whisper for audio transcription • Anthropic API for the decisions module • Railway / Render / Vercel for hosting.
+- **Frontend + backend:** Next.js 16 con App Router, React 19, TypeScript estricto, Tailwind v4 (postcss-only, sin `tailwind.config`). Server Components para lógica server-side; **no hay** backend Node/Python separado.
+- **DB + auth + storage:** Supabase (Postgres + Auth + Storage). Cliente en [lib/supabase.ts](lib/supabase.ts) exporta dos cosas:
+  - `supabase` — cliente browser, usa publishable key, RLS es el security boundary.
+  - `createAdminClient()` — server-only, usa secret key, **bypassa RLS**. Tiene guard runtime contra ejecución en el browser. NUNCA importar desde un Client Component.
+- API keys: usar las **nuevas** (`sb_publishable_*` / `sb_secret_*`), NO las legacy `anon` / `service_role`.
+- **Hosting:** Vercel. Env vars en Project Settings → Environment Variables (las tres activadas en Production + Preview + Development):
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+  - `SUPABASE_SECRET_KEY`
+- **Path alias:** `@/*` apunta a la raíz del repo. Importar como `import { supabase } from '@/lib/supabase'`.
+- **Pendiente (fases siguientes):** `whatsapp-web.js` o Baileys para Fase 1 del bot, migrar a WhatsApp Business API en Fase 3 • Whisper para transcripción de audio • Anthropic API para el módulo de Decisiones Asistidas.
 
 ## Phased delivery (PRD §7)
 
