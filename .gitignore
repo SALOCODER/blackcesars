@@ -37,3 +37,6 @@ desktop.ini
 .cache/
 .turbo/
 coverage/
+
+.vercel
+.env*.local
