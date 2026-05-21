@@ -10,6 +10,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Black Cesars OS** — executive command system for a Spanish distressed-real-estate fund (properties with okupas). Founder in México, ops team in España. Immediate goal: rescue Fondo 2 (25 properties); scale later to Fondos 1, 3, 4, 5, 6.
 
+## Project Stack
+
+- TypeScript for all source code
+- Markdown for documentation
+- Prefer Edit over Write when modifying existing files
+
 ## Build / test / lint commands
 
 Package manager: **npm**. Install: `npm install`.
@@ -140,6 +146,11 @@ Cuando el usuario diga cualquiera de estos términos, asumir la rama indicada si
 - **Merges a `main`:** small and module-scoped — do **not** bundle bot work with dashboard work en un solo publish.
 - **Schema/migration changes** require a paired migration script — never edit the DB by hand, and never edit a migration that has been merged.
 - **Plan mode** for any change touching >2 files or financial logic. Skip planning for typo-class fixes.
+
+## Bash Usage
+
+- Batch related shell commands when possible rather than running them individually
+- Prefer Glob/Grep tools over `find` and `ls` for file discovery
 
 ## Code style
 
